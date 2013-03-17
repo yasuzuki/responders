@@ -30,4 +30,26 @@ class NavigationTest < ActiveSupport::IntegrationCase
       "Expected to show flash message on destroy"
       
   end
+
+  test 'read alert messages from the controller scope' do
+    begin
+      I18n.backend.store_translations :en, flash: { users: { destroy: { alert: "Cannot destory!" } } }
+      
+      visit "/users"
+
+      click_link "New User"
+      fill_in "Name", with: "Undestroyable"
+      click_button "Create User"
+
+      click_link "Back"
+      click_link "Destroy"
+
+      assert has_content?("Cannot destory!"),
+        "Expected to show flash message on destroy"
+
+    ensure
+      I18n.reload!
+
+    end
+  end
 end
